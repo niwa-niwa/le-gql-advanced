@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import cors from "cors";
-import { ApolloServer, ExpressContext, gql } from "apollo-server-express";
+import { ApolloServer, AuthenticationError, ExpressContext, gql, UserInputError } from "apollo-server-express";
 import { DocumentNode } from "graphql";
 
 interface User {
@@ -88,10 +88,25 @@ async function main(): Promise<void> {
     },
   };
 
+  const getMe: Function = (req:any)=>{
+    const userId:string|undefined = req.headers.authorization;
+
+    if(!userId) throw new AuthenticationError("You are wrong.");
+
+    const me:User|undefined = users[Number(userId)];
+
+    if(!me) throw new UserInputError('token is wrong')
+
+    return me;
+  }
+
   const server: ApolloServer<ExpressContext> = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    context: { me: users[2] },
+    context: ({req})=>{
+      const me:User = getMe(req)
+      return { me }
+    }
   });
 
   await server.start();
