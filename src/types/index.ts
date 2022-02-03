@@ -3,6 +3,7 @@ export type User = {
   firstName: string;
   lastName: string;
   messages?: Messages;
+  role:string
 }
 
 export type Users = {
