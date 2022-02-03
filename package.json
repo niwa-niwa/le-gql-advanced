@@ -23,9 +23,11 @@
     "apollo-server-express": "^3.6.2",
     "cors": "^2.8.5",
     "express": "^4.17.2",
-    "graphql": "^16.3.0"
+    "graphql": "^16.3.0",
+    "graphql-resolvers": "^0.4.2"
   },
   "devDependencies": {
+    "@types/graphql-resolvers": "^0.3.1",
     "@types/node": "^17.0.14",
     "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
