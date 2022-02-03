@@ -14,5 +14,9 @@ const resolvers = {
       return user !== undefined;
     },
   },
+
+  User: {
+    username: (user: User) => `${user.firstName} ${user.lastName}`,
+  },
 };
 export default resolvers;
