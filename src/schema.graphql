@@ -1,0 +1,34 @@
+  type Query {
+    me: User
+    users: [User!]
+    user(id: ID!): User
+
+    messages: [Message!]!
+    message(id: ID!): Message!
+
+  }
+
+  type Mutation {
+    deleteUser(id: ID!): Boolean
+
+    createMessage(text: String!): Message!
+    deleteMessage(id: ID!): Boolean!
+
+  }
+  
+  type User {
+    id: ID!
+    username: String!
+    firstName: String!
+    lastName: String!
+    email: String!
+    messages: [Message!]
+    role: String
+  }
+
+  type Message {
+    id: ID!
+    text: String!
+    userId: String!
+    user: User!
+  }
