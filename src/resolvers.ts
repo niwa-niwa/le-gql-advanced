@@ -1,4 +1,10 @@
 import { User, Message, DB } from "./types";
+import { combineResolvers } from "graphql-resolvers";
+import {
+  isAdmin,
+  isMessageOwner,
+  isAuthenticated,
+} from "./middleware/authorization";
 
 const resolvers = {
   Query: {
@@ -15,34 +21,48 @@ const resolvers = {
   },
 
   Mutation: {
-    deleteUser: (parent: any, { id }: { id: string }, { db }: { db: DB }) => {
-      const user: User = db.user[id];
-      delete db.user[id];
-      return user !== undefined;
-    },
-
-    createMessage: (
-      parent: any,
-      { text }: { text: string },
-      { db, me }: { db: DB; me: User }
-    ) =>
-      (db.message[Object.values(db.message).length] = {
-        id: String(Object.values(db.message).length),
-        text,
-        userId: me.id,
-      }),
-    deleteMessage: (
-      parent: any,
-      { id }: { id: string },
-      { db }: { db: DB }
-    ) => {
-      if (db.message[id]) {
-        delete db.message[id];
-        return true;
-      } else {
-        return false;
+    deleteUser: combineResolvers(
+      isAdmin,
+      (
+        parent: any,
+        { id }: { id: string },
+        { db, me }: { db: DB; me: User }
+      ) => {
+        const user: User = db.user[id];
+        delete db.user[id];
+        return user !== undefined;
       }
-    },
+    ),
+
+    createMessage: combineResolvers(
+      isAuthenticated,
+      (
+        parent: any,
+        { text }: { text: string },
+        { db, me }: { db: DB; me: User }
+      ) =>
+        (db.message[Object.values(db.message).length + 1] = {
+          id: String(Object.values(db.message).length + 1),
+          text,
+          userId: me.id,
+        })
+    ),
+
+    deleteMessage: combineResolvers(
+      isMessageOwner,
+      (
+        parent: any,
+        { id }: { id: string },
+        { db, me }: { db: DB; me: User }
+      ) => {
+        if (db.message[id]) {
+          delete db.message[id];
+          return true;
+        } else {
+          return false;
+        }
+      }
+    ),
   },
 
   User: {

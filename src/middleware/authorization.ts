@@ -1,11 +1,11 @@
 import { skip } from "graphql-resolvers";
 import { ForbiddenError } from "apollo-server-express";
-import { Message, User } from "../types";
+import { Message, User, DB } from "../types";
 
 export const isAuthenticated = (
   parent: any,
   args: any,
-  { me }: { me: any }
+  { me }: { me: User }
 ) => {
   me ? skip : new ForbiddenError("Not Authenticated as user.");
 };
@@ -13,18 +13,22 @@ export const isAuthenticated = (
 export const isMessageOwner = async (
   parent: any,
   { id }: Message,
-  { db, me }: any
+  { db, me }: { db: DB; me: User }
 ) => {
-  const message: Message = db.message.filter((value: Message) => {
-    if (id === value.id) return value;
-  });
+  const message: Message[] = Object.values(db.message).filter(
+    (value: Message) => {
+      if (id === value.id) return value;
+    }
+  );
 
-  if (message.userId !== me.id)
+  if (message[0].userId !== me.id)
     throw new ForbiddenError("Not Authenticated as owner");
 
-  return skip;
+  skip;
 };
 
 export const isAdmin = (parent: any, args: any, { me }: { me: User }) => {
-  me?.role === "admin" ? skip : new ForbiddenError("Not Authorized as admin");
+  if (me.role !== "admin") throw new ForbiddenError("Not Authorized as admin");
+
+  skip;
 };
