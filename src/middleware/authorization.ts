@@ -1,6 +1,6 @@
 import { skip } from "graphql-resolvers";
 import { ForbiddenError } from "apollo-server-express";
-import { Message, User } from "../../types";
+import { Message, User } from "../types";
 
 export const isAuthenticated = (
   parent: any,

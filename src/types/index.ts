@@ -19,3 +19,8 @@ export type Message = {
 export type Messages = {
   [key: string]: Message;
 }
+
+export type DB = {
+  user:Users
+  message:Messages
+}

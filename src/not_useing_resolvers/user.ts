@@ -1,14 +1,15 @@
-import { User } from "../types";
+import { DB, User } from "../types";
 
 const resolvers = {
   Query: {
     me: (parent: any, args: any, { me }: { me: User }) => me,
-    users: (parent: any, args: any, { db }: any) => db.user,
-    user: (parent: any, { id }: any, { db }: any) => db.user[id],
+    users: (parent: any, args: any, { db }: { db: DB }) => db.user,
+    user: (parent: any, { id }: { id: string }, { db }: { db: DB }) =>
+      db.user[id],
   },
 
   Mutation: {
-    deleteUser: (parent: any, { id }: { id: string }, { db }: any) => {
+    deleteUser: (parent: any, { id }: { id: string }, { db }: { db: DB }) => {
       const user: User = db.user[id];
       delete db.user[id];
       return user !== undefined;

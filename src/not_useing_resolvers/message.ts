@@ -1,9 +1,9 @@
-import { Message, User } from "../types";
+import { Message, User, DB } from "../types";
 
 const resolvers = {
   Query: {
-    messages: (parent: any, args: any, { db }: any) => db.message,
-    message: (parent: any, { id }: { id: string }, { db }: any) =>
+    messages: (parent: any, args: any, { db }: { db: DB }) => db.message,
+    message: (parent: any, { id }: { id: string }, { db }: { db: DB }) =>
       db.message[id],
   },
 
@@ -18,7 +18,11 @@ const resolvers = {
         text,
         userId: me.id,
       }),
-    deleteMessage: (parent: any, { id }: { id: string }, { db }: any) => {
+    deleteMessage: (
+      parent: any,
+      { id }: { id: string },
+      { db }: { db: DB }
+    ) => {
       if (db.message[id]) {
         delete db.message[id];
         return true;
@@ -29,7 +33,8 @@ const resolvers = {
   },
 
   Message: {
-    user: (message: Message, args: any, { db }: any) => db.user[message.userId],
+    user: (message: Message, args: any, { db }: { db: DB }) =>
+      db.user[message.userId],
   },
 };
 export default resolvers;
